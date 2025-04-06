@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  scraper:
+    build: .
+    volumes:
+      - ./data:/app/data
+    environment:
+      - HEADLESS=true
+      - OUTPUT_DIR=/app/data
+      - MAX_RETRIES=3
+      - REQUEST_DELAY=2
+      - MAX_PAGES=5
+      - LOG_LEVEL=INFO
+    # By default, run with the ANWB provider
+    # Override with docker-compose run --rm scraper --provider other_provider
+    command: --provider anwb --output-format json,csv
+
+  test:
+    build: .
+    volumes:
+      - ./:/app
+    environment:
+      - HEADLESS=true
+      - OUTPUT_DIR=/app/test_output
+      - MAX_RETRIES=1
+      - MAX_PAGES=1
+      - LOG_LEVEL=ERROR
+    command: pytest -xvs tests/
